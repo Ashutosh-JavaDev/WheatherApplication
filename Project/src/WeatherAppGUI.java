@@ -6,28 +6,32 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 
 public class WeatherAppGUI extends JFrame {
-    // private static final String API_KEY = "0a2edb350894107f2ecc0aed23eb1811"; // Replace with your OpenWeatherMap API key
-    // private static final String BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
     private static String API_KEY;
     private static String BASE_URL;
     static {
-        try {
-            Properties props = new Properties();
-            FileInputStream input = new FileInputStream("config.properties");
-            props.load(input);
-            API_KEY = props.getProperty("api.key");
-            BASE_URL = props.getProperty("api.url");
-            input.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Could not load configuration file.", "Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
+    try {
+        InputStream input = WeatherAppGUI.class.getResourceAsStream("/config.properties");
+        if (input == null) {
+            throw new FileNotFoundException("config.properties not found in the classpath");
         }
+        Properties props = new Properties();
+        props.load(input);
+        API_KEY = props.getProperty("api.key");
+        BASE_URL = props.getProperty("api.url");
+        input.close();
+    } catch (IOException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Could not load configuration file.", "Error", JOptionPane.ERROR_MESSAGE);
+        System.exit(1);
     }
+}
+
         
     
     private JTextField cityField;
