@@ -1,93 +1,113 @@
-import org.json.JSONObject;
-import org.json.JSONArray;
-
 /**
  * Utility class for parsing JSON responses from the weather API.
  */
 public class JsonParser {
     
     /**
-     * Parses a JSON string and returns a JSONObject.
+     * Extracts a value from JSON string based on the key.
      * 
-     * @param jsonString The JSON string to parse
-     * @return A JSONObject representing the parsed JSON
-     * @throws Exception If there is an error parsing the JSON
+     * @param json The JSON string to parse
+     * @param key The key to find
+     * @return The value associated with the key
      */
-    public static JSONObject parseJson(String jsonString) throws Exception {
+    public static String extractValue(String json, String key) {
         try {
-            return new JSONObject(jsonString);
+            String searchKey = "\"" + key + "\":";
+            int start = json.indexOf(searchKey);
+            if (start == -1) return "";
+            
+            start += searchKey.length();
+            // Skip whitespace
+            while (start < json.length() && Character.isWhitespace(json.charAt(start))) {
+                start++;
+            }
+            
+            // Check if value is a string
+            if (json.charAt(start) == '"') {
+                start++; // Skip opening quote
+                int end = json.indexOf("\"", start);
+                return json.substring(start, end);
+            } 
+            // Value is a number or boolean
+            else {
+                int end = json.indexOf(",", start);
+                if (end == -1) {
+                    end = json.indexOf("}", start);
+                }
+                if (end == -1) return "";
+                return json.substring(start, end).trim();
+            }
         } catch (Exception e) {
-            throw new Exception("Error parsing JSON: " + e.getMessage());
+            return "";
         }
     }
     
     /**
-     * Safely extracts a string value from a JSONObject.
+     * Extracts a nested object from JSON string.
      * 
-     * @param json The JSONObject to extract from
-     * @param key The key to extract
-     * @param defaultValue The default value to return if the key doesn't exist
-     * @return The string value or the default value
+     * @param json The JSON string to parse
+     * @param key The key of the nested object
+     * @return The nested object as a string
      */
-    public static String getString(JSONObject json, String key, String defaultValue) {
-        return json.has(key) ? json.getString(key) : defaultValue;
+    public static String extractObject(String json, String key) {
+        try {
+            String searchKey = "\"" + key + "\":";
+            int start = json.indexOf(searchKey);
+            if (start == -1) return "{}";
+            
+            start += searchKey.length();
+            // Skip whitespace
+            while (start < json.length() && Character.isWhitespace(json.charAt(start))) {
+                start++;
+            }
+            
+            if (json.charAt(start) != '{') return "{}";
+            
+            int count = 1;
+            int end = start + 1;
+            while (count > 0 && end < json.length()) {
+                if (json.charAt(end) == '{') count++;
+                if (json.charAt(end) == '}') count--;
+                end++;
+            }
+            
+            return json.substring(start, end);
+        } catch (Exception e) {
+            return "{}";
+        }
     }
     
     /**
-     * Safely extracts a double value from a JSONObject.
+     * Extracts the first item from a weather array.
      * 
-     * @param json The JSONObject to extract from
-     * @param key The key to extract
-     * @param defaultValue The default value to return if the key doesn't exist
-     * @return The double value or the default value
+     * @param json The JSON string to parse
+     * @return The first weather item as a string
      */
-    public static double getDouble(JSONObject json, String key, double defaultValue) {
-        return json.has(key) ? json.getDouble(key) : defaultValue;
-    }
-    
-    /**
-     * Safely extracts an integer value from a JSONObject.
-     * 
-     * @param json The JSONObject to extract from
-     * @param key The key to extract
-     * @param defaultValue The default value to return if the key doesn't exist
-     * @return The integer value or the default value
-     */
-    public static int getInt(JSONObject json, String key, int defaultValue) {
-        return json.has(key) ? json.getInt(key) : defaultValue;
-    }
-    
-    /**
-     * Safely extracts a long value from a JSONObject.
-     * 
-     * @param json The JSONObject to extract from
-     * @param key The key to extract
-     * @param defaultValue The default value to return if the key doesn't exist
-     * @return The long value or the default value
-     */
-    public static long getLong(JSONObject json, String key, long defaultValue) {
-        return json.has(key) ? json.getLong(key) : defaultValue;
-    }
-    
-    /**
-     * Safely extracts a nested JSONObject from a JSONObject.
-     * 
-     * @param json The JSONObject to extract from
-     * @param key The key to extract
-     * @return The JSONObject or null if it doesn't exist
-     */
-    public static JSONObject getJsonObject(JSONObject json, String key) {
-        return json.has(key) ? json.getJSONObject(key) : null;
-    }
-    
-    /**
-     * Safely extracts a JSONArray from a JSONObject.
-     * 
-     * @param json The JSONObject to extract from
-     * @param key The key to extract
-     * @return The JSONArray or null if it doesn't exist
-     */
-    public static JSONArray getJsonArray(JSONObject json, String key) {
-        return json.has(key) ? json.getJSONArray(key) : null;
+    public static String extractFirstWeather(String json) {
+        try {
+            String weatherKey = "\"weather\":";
+            int start = json.indexOf(weatherKey);
+            if (start == -1) return "{}";
+            
+            start += weatherKey.length();
+            // Skip to first object
+            while (start < json.length() && json.charAt(start) != '{') {
+                start++;
+            }
+            
+            if (json.charAt(start) != '{') return "{}";
+            
+            int count = 1;
+            int end = start + 1;
+            while (count > 0 && end < json.length()) {
+                if (json.charAt(end) == '{') count++;
+                if (json.charAt(end) == '}') count--;
+                end++;
+            }
+            
+            return json.substring(start, end);
+        } catch (Exception e) {
+            return "{}";
+        }
     }
 }

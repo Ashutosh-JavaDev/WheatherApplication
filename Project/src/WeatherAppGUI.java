@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import javax.imageio.ImageIO;
-import javax.json.*;
+
 
 public class WeatherAppGUI extends JFrame {
     // Configuration constants
