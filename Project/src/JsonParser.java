@@ -1,5 +1,5 @@
-import javax.json.*;
-import java.io.StringReader;
+import org.json.JSONObject;
+import org.json.JSONArray;
 
 /**
  * Utility class for parsing JSON responses from the weather API.
@@ -7,87 +7,87 @@ import java.io.StringReader;
 public class JsonParser {
     
     /**
-     * Parses a JSON string and returns a JsonObject.
+     * Parses a JSON string and returns a JSONObject.
      * 
      * @param jsonString The JSON string to parse
-     * @return A JsonObject representing the parsed JSON
+     * @return A JSONObject representing the parsed JSON
      * @throws Exception If there is an error parsing the JSON
      */
-    public static JsonObject parseJson(String jsonString) throws Exception {
-        try (JsonReader reader = Json.createReader(new StringReader(jsonString))) {
-            return reader.readObject();
+    public static JSONObject parseJson(String jsonString) throws Exception {
+        try {
+            return new JSONObject(jsonString);
         } catch (Exception e) {
             throw new Exception("Error parsing JSON: " + e.getMessage());
         }
     }
     
     /**
-     * Safely extracts a string value from a JsonObject.
+     * Safely extracts a string value from a JSONObject.
      * 
-     * @param json The JsonObject to extract from
+     * @param json The JSONObject to extract from
      * @param key The key to extract
      * @param defaultValue The default value to return if the key doesn't exist
      * @return The string value or the default value
      */
-    public static String getString(JsonObject json, String key, String defaultValue) {
-        return json.containsKey(key) ? json.getString(key) : defaultValue;
+    public static String getString(JSONObject json, String key, String defaultValue) {
+        return json.has(key) ? json.getString(key) : defaultValue;
     }
     
     /**
-     * Safely extracts a double value from a JsonObject.
+     * Safely extracts a double value from a JSONObject.
      * 
-     * @param json The JsonObject to extract from
+     * @param json The JSONObject to extract from
      * @param key The key to extract
      * @param defaultValue The default value to return if the key doesn't exist
      * @return The double value or the default value
      */
-    public static double getDouble(JsonObject json, String key, double defaultValue) {
-        return json.containsKey(key) ? json.getJsonNumber(key).doubleValue() : defaultValue;
+    public static double getDouble(JSONObject json, String key, double defaultValue) {
+        return json.has(key) ? json.getDouble(key) : defaultValue;
     }
     
     /**
-     * Safely extracts an integer value from a JsonObject.
+     * Safely extracts an integer value from a JSONObject.
      * 
-     * @param json The JsonObject to extract from
+     * @param json The JSONObject to extract from
      * @param key The key to extract
      * @param defaultValue The default value to return if the key doesn't exist
      * @return The integer value or the default value
      */
-    public static int getInt(JsonObject json, String key, int defaultValue) {
-        return json.containsKey(key) ? json.getInt(key) : defaultValue;
+    public static int getInt(JSONObject json, String key, int defaultValue) {
+        return json.has(key) ? json.getInt(key) : defaultValue;
     }
     
     /**
-     * Safely extracts a long value from a JsonObject.
+     * Safely extracts a long value from a JSONObject.
      * 
-     * @param json The JsonObject to extract from
+     * @param json The JSONObject to extract from
      * @param key The key to extract
      * @param defaultValue The default value to return if the key doesn't exist
      * @return The long value or the default value
      */
-    public static long getLong(JsonObject json, String key, long defaultValue) {
-        return json.containsKey(key) ? json.getJsonNumber(key).longValue() : defaultValue;
+    public static long getLong(JSONObject json, String key, long defaultValue) {
+        return json.has(key) ? json.getLong(key) : defaultValue;
     }
     
     /**
-     * Safely extracts a nested JsonObject from a JsonObject.
+     * Safely extracts a nested JSONObject from a JSONObject.
      * 
-     * @param json The JsonObject to extract from
+     * @param json The JSONObject to extract from
      * @param key The key to extract
-     * @return The JsonObject or null if it doesn't exist
+     * @return The JSONObject or null if it doesn't exist
      */
-    public static JsonObject getJsonObject(JsonObject json, String key) {
-        return json.containsKey(key) ? json.getJsonObject(key) : null;
+    public static JSONObject getJsonObject(JSONObject json, String key) {
+        return json.has(key) ? json.getJSONObject(key) : null;
     }
     
     /**
-     * Safely extracts a JsonArray from a JsonObject.
+     * Safely extracts a JSONArray from a JSONObject.
      * 
-     * @param json The JsonObject to extract from
+     * @param json The JSONObject to extract from
      * @param key The key to extract
-     * @return The JsonArray or null if it doesn't exist
+     * @return The JSONArray or null if it doesn't exist
      */
-    public static JsonArray getJsonArray(JsonObject json, String key) {
-        return json.containsKey(key) ? json.getJsonArray(key) : null;
+    public static JSONArray getJsonArray(JSONObject json, String key) {
+        return json.has(key) ? json.getJSONArray(key) : null;
     }
 }
